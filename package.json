@@ -1,0 +1,65 @@
+{
+  "name": "fluxurious",
+  "version": "1.0.0",
+  "description": "An event/store system that uses react context to pass changes.",
+  "main": "./src/index.js",
+  "typings": "./d/index.d.ts",
+  "scripts": {
+    "prerelease": "npm run test && npm version patch",
+    "release": "npm publish",
+    "clean": "rimraf dist d",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "jest"
+  },
+  "keywords": [
+    "flux",
+    "redux",
+    "typescript",
+    "functional",
+    "pubsub"
+  ],
+  "jest": {
+    "setupTestFrameworkScriptFile": "./jest.test.setup.js",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "collectCoverage": true
+  },
+  "author": "geh <g.hamilton.home@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^23.3.1",
+    "@types/lodash.debounce": "^4.0.4",
+    "@types/node": "^10.9.2",
+    "@types/react": "^16.4.12",
+    "cross-env": "^5.2.0",
+    "enzyme": "^3.5.0",
+    "enzyme-adapter-react-16": "^1.3.0",
+    "jest": "^23.5.0",
+    "jest-extended": "^0.8.1",
+    "lodash.debounce": "^4.0.8",
+    "react-test-renderer": "^16.4.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "@types/debug": "0.0.30",
+    "debug": "^3.1.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
+  }
+}

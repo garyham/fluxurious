@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+*.sw*
+*.log
+*~
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+.idea/mongoSettings.xml
+node_modules/
+bower_components/
+coverage/
+dist/
+d/
