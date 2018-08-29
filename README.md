@@ -1,14 +1,27 @@
 # Fluxurious
 
-## Why?
+## What is it?
 
-I wanted a strongly typed event/store system with easy integration into React (16+). It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is not Redux. Time-travelling debug was not a design intent, nor has it any of the tool chain support.
+I like to think of it as the love child of Redux and React.
+
+I wanted a strongly typed event/store system with easy integration into React (16+).
+
+It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is **not** Redux. Time-travelling debug was not a design intent, nor has it any of the tool chain support.
 
 I was strongly influenced, both positively and negatively, by Redux (reducers, connect() and the separation of concerns), immutable data and reactive programming (RxJs) and I am a huge typescript fan.
 
-## Events
+## Install
 
-### Creating
+npm i -S fluxurious
+
+## Prerequisites
+
+React 16 (needs new Context mechanism);
+Typescript ^2.9.0 is the version I tested with but the types should work with most.
+
+# Events
+
+## Creating
 
 Creating is simple.
 
@@ -22,13 +35,13 @@ interface IPayloadTransaction {
 const makePayment = new Event<IPayloadTransaction>('makePayment');
 ```
 
-### Publishing data
+## Publishing data
 
 ```typescript
 makePayment.publish({ from: 'Alice', to: 'Bob', amount: 100 });
 ```
 
-### Subscribing.
+## Subscribing.
 
 ```typescript
 const amountSubscriber = ({ from, to, amount }) => {
@@ -40,7 +53,7 @@ const unsub = eventMakePayment.subscribe(amountSubscriber);
 
 > I made amountSubscriber a separate function to ensure it was a named function. This makes for more readable logs.
 
-### Unsubscribing.
+## Unsubscribing.
 
 Just call the function returned from the subscription call.
 
@@ -48,9 +61,9 @@ Just call the function returned from the subscription call.
 unsub();
 ```
 
-### Execution order.
+## Execution order.
 
-#### Single Event
+### Single Event
 
 The order of execution is the order in which subscribers are registered. If you have an order dependency you can subscribe (and unsubscribe) arrays of subscribers.
 
@@ -70,7 +83,7 @@ const unsub = eventMakePayment.subscribe([
 
 calling `unsub()` will unsubscribe them all.
 
-#### Cascaded Events
+### Cascaded Events
 
 Consider event A with subscribers 1,2 and 3 and event B with subscribers 4 and 5.
 
@@ -80,11 +93,11 @@ If subscriber 1 calls event B this could create a sequencing issue.
 
 To guarantee ordering, the dispatching is wrapped in a call to `setImmediate()`. This will guarantee the order is 1,2,3 then 4,5.
 
-#### First Subscriber
+### First Subscriber
 
 The function `.subscribeFirst()` allows a subscriber to be forced to the head of the dispatch list. Usually new subscriptions are added to the end.
 
-### Advanced Control
+## Advanced Control
 
 The `dispatcher` can be wrapped to allow for filtering, throttling or debounce prior to dispatching.
 
@@ -94,11 +107,11 @@ eventMakePayment.wrapDispatcher((originalDispatcher) => lodash.debounce(original
 
 Mapping the payload from one type to another cannot be done by wrapping the dispatcher as they are strongly typed but this can be accomplished by cascading 2 events.
 
-## Stores
+# Stores
 
 Stores manage state and work in tandem with Events
 
-### Creating
+## Creating
 
 ```typescript
 interface IMyAccountState {
@@ -109,7 +122,7 @@ interface IMyAccountState {
 const myAccount = new Store<IMyAccountState>('my bank account', { name: 'Bob', amount: 0 });
 ```
 
-### Subscribing to Events
+## Subscribing to Events
 
 Each store has a `.makeSubscriber()` function. This takes a reducer with the signature `(payload:P, state:S)=>S`.
 
@@ -139,7 +152,7 @@ unsub = eventMakePayment.subscribe(transactionSubscriber);
 >
 > For the bad transaction, we simply return an unchanged state
 
-### Changes in the Store contents.
+## Changes in the Store contents.
 
 Each store also has an event which may be subscribed to.
 
@@ -149,11 +162,11 @@ myAccount.eventChange.subscribe(({ name, amount }) => {
 });
 ```
 
-### Reading the Store contents.
+## Reading the Store contents.
 
 The contents of the store can be read by accessing the `.state` property.
 
-## Context
+# Context
 
 One of the features I loved with redux was the `connect()` method. This cleanly separated the state domain from the react domain and allowed for clean stateless components.
 
@@ -161,7 +174,7 @@ Redux achieves this by passing the store react `context`
 
 React 16 comes with the new Context mechanism which this library integrates with stores and events to achieve the same separation of concerns.
 
-### Creating
+## Creating
 
 ```typescript
 const myStateWrapper = new Context<IMyAccountState>('myState');
@@ -169,7 +182,7 @@ const myStateWrapper = new Context<IMyAccountState>('myState');
 
 The name `myState` is **important** as it is used as the prop name by the Consumer.
 
-### The Consumer
+## The Consumer
 
 ```typescript
 interface IProps {
@@ -187,7 +200,7 @@ export const ShowAccount: React.SFC<IProps> = ({ myState }) => {
 const WrappedShowAccount = myStateWrapper.connect(ShowAccount);
 ```
 
-### The Provider
+## The Provider
 
 The provider takes a single prop, the `store` which must be an instanceOf(Store). The provider listens to events on the store and any changes in state will cause it to re-render.
 
@@ -211,9 +224,9 @@ export const App: React.SFC<IProps> = (props) => {
 };
 ```
 
-### Nesting
+## Nesting
 
-#### Consumers
+### Consumers
 
 You can create as many wrappers as necessary and cascade them on a component.
 
@@ -221,7 +234,7 @@ You can create as many wrappers as necessary and cascade them on a component.
 const WrappedShowAccount = authStateWrapper.connect(myStateWrapper.connect(ShowAccount));
 ```
 
-#### Providers
+### Providers
 
 Providers can be placed at an appropriate depth.
 
@@ -246,13 +259,13 @@ export const App: React.SFC<IProps> = (props) => {
 };
 ```
 
-### Logging
+## Logging
 
 The Store, Event and Context classes all have a static function called `addLogger`.
 
 Event names are prefixed with `event::`, Store names with `store::`. The Loggers support `onCreate, onRender, onMount, onUnmount, onDispatch, onSubscribe, onUnsubscribe` methods which be selectively installed as needed. Example loggers are provided which simply log to console.
 
-### Initialisation
+## Initialisation
 
 I recommend creating all the actions and stores in the application before registering any subscribers.
 
