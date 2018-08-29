@@ -46,7 +46,7 @@ describe('Store tests', () => {
   });
 
   test('should subscribe to an event', () => {
-    ageEvent.addSubscriber(
+    ageEvent.subscribe(
       testStore.makeSubscriber(({ age }, state) => {
         if (age === 100) {
           return state;
@@ -69,7 +69,7 @@ describe('Store tests', () => {
       sawAge = age;
     };
 
-    testStore.eventChange.addSubscriber(updateAge);
+    testStore.eventChange.subscribe(updateAge);
     ageEvent.publish({ age: 52 });
     expectedState.age = 52;
     jest.runAllImmediates();
@@ -79,7 +79,7 @@ describe('Store tests', () => {
   test('should NOT issue event when age = 100', () => {
     let sawAge: number;
 
-    testStore.eventChange.addSubscriber(({ age }) => {
+    testStore.eventChange.subscribe(({ age }) => {
       sawAge = age;
     });
     ageEvent.publish({ age: 100 });
@@ -88,7 +88,7 @@ describe('Store tests', () => {
     expect(sawAge).toBeUndefined();
   });
   test('should add subscriber as part of array', () => {
-    nameEvent.addSubscriber([
+    nameEvent.subscribe([
       testStore.makeSubscriber(({ name }, state) => {
         dummyFn1(name);
         return { ...state, name };
@@ -104,5 +104,8 @@ describe('Store tests', () => {
     expectedState.name = 'Ernie';
     expect(testStore.state).toEqual(expectedState);
     expect(dummyFn1).toHaveBeenCalledBefore(dummyFn2);
+  });
+  test('should reset the logger', () => {
+    Store.addLogger();
   });
 });

@@ -35,7 +35,7 @@ describe('Context tests', () => {
     return { ...state, age };
   });
 
-  ageEvent.addSubscriber(storeSubscriber);
+  ageEvent.subscribe(storeSubscriber);
 
   test('should add a logger', () => {
     Context.addLogger(standardContextLogger);
@@ -85,5 +85,8 @@ describe('Context tests', () => {
     wrapper.update();
     expect(wrapper.containsMatchingElement(<pre>{JSON.stringify(expectedState)}</pre>)).toBe(true);
     wrapper.unmount();
+  });
+  test('should reset the logger', () => {
+    Context.addLogger();
   });
 });

@@ -6,14 +6,14 @@ export type DispatcherWrapperFn<P> = (wrapper: SubscriberFn<P>) => SubscriberFn<
 export type UnsubFn = () => void;
 
 export interface EventLogger {
-  onCreate: (eventName: string) => void;
-  onDispatch: (eventName: string, payload: any) => void;
-  onSubscribe: (eventName: string, subscriberName: string) => void;
-  onUnSubscribe: (eventName: string, subscriberName: string) => void;
+  onCreate?: (eventName: string) => void;
+  onDispatch?: (eventName: string, payload: any) => void;
+  onSubscribe?: (eventName: string, subscriberName: string) => void;
+  onUnSubscribe?: (eventName: string, subscriberName: string) => void;
 }
 
 export class Event<P = undefined> {
-  public static addLogger(logger: EventLogger) {
+  public static addLogger(logger: EventLogger = {}) {
     Event.logger = logger;
   }
 
@@ -38,25 +38,30 @@ export class Event<P = undefined> {
     this.dispatcher = wrapper(this.dispatcher);
   }
 
+  public resetDispatcher() {
+    this.dispatcher = this._dispatch;
+  }
+
   public publish(payload?: P) {
     setImmediate(() => {
-      this.dispatcher(payload);
+      try {
+        this.dispatcher(payload);
+      } catch (error) {
+        console.error('publish saw a bad dispatch error %s', this.name);
+        throw error;
+      }
     });
   }
 
-  public addSubscriberFirst(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
-    return this.addSubscriberAny(this._subs.start, subFns, forcedName);
+  public subscribeFirst(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
+    return this.subscribeAny(this._subs.start, subFns, forcedName);
   }
 
-  public addSubscriber(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
-    return this.addSubscriberAny(this._subs.end, subFns, forcedName);
+  public subscribe(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
+    return this.subscribeAny(this._subs.end, subFns, forcedName);
   }
 
-  private addSubscriberAny(
-    after: INode,
-    subFns: SubscriberFn<P> | Array<SubscriberFn<P>>,
-    forcedName?: string
-  ): UnsubFn {
+  private subscribeAny(after: INode, subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
     const { onSubscribe, onUnSubscribe } = Event.logger;
     let subs: Array<SubscriptionNode<P>>;
 
@@ -127,8 +132,13 @@ export class Event<P = undefined> {
 
     onDispatch && onDispatch(this.name, payload);
     this._subs.forEach((sub) => {
-      const { fn } = sub;
-      fn(payload);
+      const { fn, name } = sub;
+      try {
+        fn(payload);
+      } catch (error) {
+        console.error(`bad dispatcher ${name}`);
+        throw error;
+      }
     });
   }
 }

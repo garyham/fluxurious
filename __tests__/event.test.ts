@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { Event, standardEventLogger, SubscriberFn, UnsubFn } from '../src';
+import { Event, standardEventLogger, Store, SubscriberFn, UnsubFn } from '../src';
 
 jest.useFakeTimers();
 
@@ -33,7 +33,7 @@ describe('event tests', () => {
     expect(testEvent).toBeInstanceOf(Event);
   });
   it('should add a single subscriber', () => {
-    unsub = testEvent.addSubscriber(firstFn);
+    unsub = testEvent.subscribe(firstFn);
     expect(testEvent.length).toBe(1);
   });
   it('should publish an event', () => {
@@ -42,7 +42,7 @@ describe('event tests', () => {
     expect(firstFn).toHaveBeenLastCalledWith({ name: 'Ellen', age: 21 });
   });
   it('should add array subscriber', () => {
-    unsub2 = testEvent.addSubscriber([secondFn, thirdFn]);
+    unsub2 = testEvent.subscribe([secondFn, thirdFn]);
     expect(testEvent.length).toBe(3);
   });
   it('should publish an event to multiple sources', () => {
@@ -71,17 +71,17 @@ describe('event tests', () => {
   });
   it('should throw when empty array', () => {
     expect(() => {
-      testEvent.addSubscriber([]);
+      testEvent.subscribe([]);
     }).toThrowError();
     expect(() => {
-      testEvent.addSubscriber('hi' as any);
+      testEvent.subscribe('hi' as any);
     }).toThrowError();
     expect(() => {
-      testEvent.addSubscriber(['hi'] as any);
+      testEvent.subscribe(['hi'] as any);
     }).toThrowError();
   });
   it('should subscribe first again', () => {
-    unsub = testEvent.addSubscriberFirst(firstFn, 'first');
+    unsub = testEvent.subscribeFirst(firstFn, 'first');
     expect(testEvent.length).toBe(3);
   });
   it('should publish in correct order', () => {
@@ -106,7 +106,7 @@ describe('event tests', () => {
     expect(thirdFn).not.toHaveBeenCalled();
   });
   it('should subscribe the array first', () => {
-    unsub2 = testEvent.addSubscriberFirst([secondFn, thirdFn]);
+    unsub2 = testEvent.subscribeFirst([secondFn, thirdFn]);
     expect(testEvent.length).toBe(3);
   });
   it('should publish again in correct order', () => {
@@ -136,5 +136,30 @@ describe('event tests', () => {
     expect(secondFn).toHaveBeenCalledBefore(thirdFn);
     expect(thirdFn).toHaveBeenCalledBefore(firstFn);
     expect(testEvent.length).toBe(3);
+  });
+  it('should catch bad subscriber', () => {
+    testEvent.subscribe(() => {
+      throw new Error('bad subscriber');
+    });
+    expect(() => {
+      testEvent.publish({ name: 'Gary', age: 38 });
+      jest.runAllImmediates();
+    }).toThrow();
+  });
+  it('should catch a bad wrapper', () => {
+    testEvent.resetDispatcher();
+    testEvent.wrapDispatcher(() => {
+      return () => {
+        throw new Error('bad dispatcher');
+      };
+    });
+
+    expect(() => {
+      testEvent.publish({ name: 'Gary', age: 38 });
+      jest.runAllImmediates();
+    }).toThrow();
+  });
+  it('should reset the logger', () => {
+    Event.addLogger();
   });
 });

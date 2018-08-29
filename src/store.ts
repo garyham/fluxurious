@@ -2,11 +2,11 @@ import { ReducerFn, SubscriberFn } from './event';
 import { Event } from './event';
 
 export interface StoreLogger {
-  onCreate: (storeName: string) => void;
+  onCreate?: (storeName: string) => void;
 }
 
 export class Store<S> {
-  public static addLogger(logger: StoreLogger) {
+  public static addLogger(logger: StoreLogger = {}) {
     Store.logger = logger;
   }
 

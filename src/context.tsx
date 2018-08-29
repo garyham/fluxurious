@@ -7,13 +7,13 @@ jest.useFakeTimers();
 // OP are the outer props.
 
 export interface ContextLogger {
-  onCreate: (propName: string) => void;
-  onMountProvider: (propName: string) => void;
-  onUnmountProvider: (propName: string) => void;
-  onMountConsumer: (componentName: string) => void;
-  onUnmountConsumer: (componentName: string) => void;
-  onStateChangeProvider: (propName: string) => void;
-  onRenderProvider: (propName: string) => void;
+  onCreate?: (propName: string) => void;
+  onMountProvider?: (propName: string) => void;
+  onUnmountProvider?: (propName: string) => void;
+  onMountConsumer?: (componentName: string) => void;
+  onUnmountConsumer?: (componentName: string) => void;
+  onStateChangeProvider?: (propName: string) => void;
+  onRenderProvider?: (propName: string) => void;
 }
 
 interface Props<S> {
@@ -25,7 +25,7 @@ interface State<S> {
 }
 
 export class Context<S> {
-  public static addLogger(logger: ContextLogger) {
+  public static addLogger(logger: ContextLogger = {}) {
     Context.logger = logger;
   }
 
@@ -61,7 +61,7 @@ export class Context<S> {
 
       public componentDidMount() {
         const { store } = this.props;
-        store && (_unsub = store.eventChange.addSubscriber(this.providerChangeState, _name));
+        store && (_unsub = store.eventChange.subscribe(this.providerChangeState, _name));
       }
 
       public componentWillUnmount() {
