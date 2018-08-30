@@ -2,7 +2,7 @@
   "name": "fluxurious",
   "version": "1.0.3",
   "description": "An event/store system that uses react context to pass changes.",
-  "main": "./src/index.js",
+  "main": "./dist/index.js",
   "typings": "./d/index.d.ts",
   "scripts": {
     "prerelease": "npm run test && npm version patch",
