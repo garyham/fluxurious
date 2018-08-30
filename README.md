@@ -2,8 +2,6 @@
 
 ## What is it?
 
-I like to think of it as the love child of Redux and React.
-
 I wanted a strongly typed event/store system with easy integration into React (16+).
 
 It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is **not** Redux. Time-travelling debug was not a design intent, nor has it any of the tool chain support.
@@ -18,6 +16,10 @@ npm i -S fluxurious
 
 React 16 (needs new Context mechanism);
 Typescript ^2.9.0 is the version I tested with but the types should work with most.
+
+## Influences
+
+I hadn't even thought of Context as a replacement for Redux until I read [this article by Didier FRANC](https://medium.freecodecamp.org/replacing-redux-with-the-new-react-context-api-8f5d01a00e8c) and [this article by Dave Ceddia](https://daveceddia.com/context-api-vs-redux/). Thanks guys.
 
 # Events
 
