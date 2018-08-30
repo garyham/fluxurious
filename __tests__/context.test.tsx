@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import { Context, Event, Store } from '../src';
 import { standardContextLogger } from '../src/log';
+jest.useFakeTimers();
 
 interface IMeState {
   age: number;

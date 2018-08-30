@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { UnsubFn } from './event';
 import { Store } from './store';
-jest.useFakeTimers();
-
 /* tslint:disable:max-classes-per-file */
 // OP are the outer props.
 
