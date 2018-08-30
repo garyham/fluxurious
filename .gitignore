@@ -7,5 +7,6 @@
 .idea/mongoSettings.xml
 node_modules/
 bower_components/
+coverage/
 dist/
 d/
