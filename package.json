@@ -1,6 +1,6 @@
 {
   "name": "fluxurious",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "An event/store system that uses react context to pass changes.",
   "main": "./dist/index.js",
   "typings": "./d/index.d.ts",
