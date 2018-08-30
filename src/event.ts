@@ -21,7 +21,7 @@ export class Event<P = undefined> {
 
   public name: string;
   private _subs: List<SubscriptionNode<P>>;
-  private dispatcher: SubscriberFn<P> = this._dispatch;
+  private dispatcher: SubscriberFn<P>;
 
   constructor(name: string) {
     this.name = `event::${name}`;
@@ -29,6 +29,7 @@ export class Event<P = undefined> {
     onCreate && onCreate(this.name);
     this._subs = new List<SubscriptionNode<P>>();
     this._dispatch = this._dispatch.bind(this);
+    this.dispatcher = this._dispatch;
   }
 
   public get length() {
