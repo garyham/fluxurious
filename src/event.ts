@@ -28,6 +28,7 @@ export class Event<P = undefined> {
     const { onCreate } = Event.logger;
     onCreate && onCreate(this.name);
     this._subs = new List<SubscriptionNode<P>>();
+    this._dispatch = this._dispatch.bind(this);
   }
 
   public get length() {
