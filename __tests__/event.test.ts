@@ -10,11 +10,15 @@ interface ITestEventPayload {
 
 describe('event tests', () => {
   let testEvent: Event<ITestEventPayload>;
+  let testEvent2: Event<ITestEventPayload>;
+  testEvent2 = new Event('test');
+
   const firstFn = jest.fn();
   const secondFn = jest.fn();
   const thirdFn = jest.fn();
   let unsub: UnsubFn;
   let unsub2: UnsubFn;
+  let unsub3: UnsubFn;
 
   beforeEach(() => {
     firstFn.mockReset();
@@ -138,13 +142,14 @@ describe('event tests', () => {
     expect(testEvent.length).toBe(3);
   });
   it('should catch bad subscriber', () => {
-    testEvent.subscribe(() => {
+    unsub3 = testEvent.subscribe(() => {
       throw new Error('bad subscriber');
     });
     expect(() => {
       testEvent.publish({ name: 'Gary', age: 38 });
       jest.runAllImmediates();
     }).toThrow();
+    unsub3();
   });
   it('should catch a bad wrapper', () => {
     testEvent.resetDispatcher();
@@ -161,5 +166,15 @@ describe('event tests', () => {
   });
   it('should reset the logger', () => {
     Event.addLogger();
+  });
+  it('should throw when recursive', () => {
+    testEvent2.resetDispatcher();
+    testEvent2.subscribe(() => {
+      testEvent2.publish();
+    });
+
+    expect(() => {
+      testEvent2.publish();
+    }).toThrow();
   });
 });
