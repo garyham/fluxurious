@@ -52,14 +52,11 @@ export class Context<S> {
       }
 
       public componentWillMount() {
+        const { store } = this.props;
+        store && (_unsub = store.eventChange.subscribe(this.providerChangeState, _name));
         const { onMountProvider } = Context.logger;
         onMountProvider && onMountProvider(_name);
         setWrap(true);
-      }
-
-      public componentDidMount() {
-        const { store } = this.props;
-        store && (_unsub = store.eventChange.subscribe(this.providerChangeState, _name));
       }
 
       public componentWillUnmount() {
