@@ -44,9 +44,7 @@ export class Store<S> {
       const currentState = this._state;
       this._state = reducerFn(payload, this.state);
       if (this._state !== currentState) {
-        setImmediate(() => {
-          this.eventChange.publish(this._state);
-        });
+        this.eventChange.publish(this._state);
       }
     };
 

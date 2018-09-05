@@ -87,13 +87,7 @@ calling `unsub()` will unsubscribe them all.
 
 ### Cascaded Events
 
-Consider event A with subscribers 1,2 and 3 and event B with subscribers 4 and 5.
-
-If subscriber 1 calls event B this could create a sequencing issue.
-
-> **Is the order** 1,2,3 then 4,5 **or** 1,2 then 4,5 and finally 3.
-
-To guarantee ordering, the dispatching is wrapped in a call to `setImmediate()`. This will guarantee the order is 1,2,3 then 4,5.
+> setImmediate() has been removed and a depth counter added to detect recursive events.
 
 ### First Subscriber
 
