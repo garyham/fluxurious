@@ -32,13 +32,13 @@ describe('event tests', () => {
 
   it('should create an event', () => {
     testEvent = new Event('test');
-    expect(testEvent.length).toBe(0);
+    expect(testEvent.length()).toBe(0);
     expect(testEvent.name).toBe('event::test');
     expect(testEvent).toBeInstanceOf(Event);
   });
   it('should add a single subscriber', () => {
     unsub = testEvent.subscribe(firstFn);
-    expect(testEvent.length).toBe(1);
+    expect(testEvent.length()).toBe(1);
   });
   it('should publish an event', () => {
     testEvent.publish({ name: 'Ellen', age: 21 });
@@ -47,7 +47,7 @@ describe('event tests', () => {
   });
   it('should add array subscriber', () => {
     unsub2 = testEvent.subscribe([secondFn, thirdFn]);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should publish an event to multiple sources', () => {
     testEvent.publish({ name: 'Matt', age: 20 });
@@ -57,11 +57,11 @@ describe('event tests', () => {
     expect(thirdFn).toHaveBeenLastCalledWith({ name: 'Matt', age: 20 });
     expect(firstFn).toHaveBeenCalledBefore(secondFn);
     expect(secondFn).toHaveBeenCalledBefore(thirdFn);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should unsubscribe', () => {
     unsub();
-    expect(testEvent.length).toBe(2);
+    expect(testEvent.length()).toBe(2);
     testEvent.publish({ name: 'Ben', age: 17 });
     jest.runAllImmediates();
     expect(firstFn).not.toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe('event tests', () => {
   });
   it('should subscribe first again', () => {
     unsub = testEvent.subscribeFirst(firstFn, 'first');
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should publish in correct order', () => {
     testEvent.publish({ name: 'Michaela', age: 38 });
@@ -96,11 +96,11 @@ describe('event tests', () => {
     expect(thirdFn).toHaveBeenLastCalledWith({ name: 'Michaela', age: 38 });
     expect(firstFn).toHaveBeenCalledBefore(secondFn);
     expect(secondFn).toHaveBeenCalledBefore(thirdFn);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should unsubscribe the array', () => {
     unsub2();
-    expect(testEvent.length).toBe(1);
+    expect(testEvent.length()).toBe(1);
   });
   it('should publish correctly after array', () => {
     testEvent.publish({ name: 'Ben', age: 17 });
@@ -111,7 +111,7 @@ describe('event tests', () => {
   });
   it('should subscribe the array first', () => {
     unsub2 = testEvent.subscribeFirst([secondFn, thirdFn]);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should publish again in correct order', () => {
     testEvent.publish({ name: 'Gary', age: 38 });
@@ -121,7 +121,7 @@ describe('event tests', () => {
     expect(thirdFn).toHaveBeenLastCalledWith({ name: 'Gary', age: 38 });
     expect(secondFn).toHaveBeenCalledBefore(thirdFn);
     expect(thirdFn).toHaveBeenCalledBefore(firstFn);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should wrap dispatcher', () => {
     let wrappedCalled: boolean = false;
@@ -139,7 +139,7 @@ describe('event tests', () => {
     expect(thirdFn).toHaveBeenLastCalledWith({ name: 'Gary', age: 38 });
     expect(secondFn).toHaveBeenCalledBefore(thirdFn);
     expect(thirdFn).toHaveBeenCalledBefore(firstFn);
-    expect(testEvent.length).toBe(3);
+    expect(testEvent.length()).toBe(3);
   });
   it('should catch bad subscriber', () => {
     unsub3 = testEvent.subscribe(() => {

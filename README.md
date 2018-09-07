@@ -1,8 +1,12 @@
 # Fluxurious
 
+## Changes
+
+The `.length` property of the event has been changed to `.length()` a method (from a getter) and all Event methods are now bound to `this` to make Events easier to pass over calling boundaries.
+
 ## What is it?
 
-I wanted a strongly typed event/store system with easy integration into React (16+).
+A strongly typed event/store system with easy integration into React (16+). Events are independent of the Store and allow 0..N subscribers to listen for a published payload. Stores can subscribe to Events (as can other functions). Contexts are created to allow Store state to be passed easily to React components.
 
 It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is **not** Redux. Time-travelling debug was not a design intent, nor has it any of the tool chain support.
 

@@ -29,23 +29,22 @@ export class Event<P = undefined> {
     const { onCreate } = Event.logger;
     onCreate && onCreate(this.name);
     this._subs = new List<SubscriptionNode<P>>();
-    this._dispatch = this._dispatch.bind(this);
     this.dispatcher = this._dispatch;
   }
 
-  public get length() {
+  public length = () => {
     return this._subs.length;
-  }
+  };
 
-  public wrapDispatcher(wrapper: DispatcherWrapperFn<P>) {
+  public wrapDispatcher = (wrapper: DispatcherWrapperFn<P>) => {
     this.dispatcher = wrapper(this.dispatcher);
-  }
+  };
 
-  public resetDispatcher() {
+  public resetDispatcher = () => {
     this.dispatcher = this._dispatch;
-  }
+  };
 
-  public publish(payload?: P) {
+  public publish = (payload?: P) => {
     this.callDepth += 1;
     if (this.callDepth > 100) {
       console.error('Dispatching halted at depth of 100...possible recursive event loop');
@@ -60,17 +59,21 @@ export class Event<P = undefined> {
     }
 
     this.callDepth -= 1;
-  }
+  };
 
-  public subscribeFirst(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
+  public subscribeFirst = (subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn => {
     return this.subscribeAny(this._subs.start, subFns, forcedName);
-  }
+  };
 
-  public subscribe(subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
+  public subscribe = (subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn => {
     return this.subscribeAny(this._subs.end, subFns, forcedName);
-  }
+  };
 
-  private subscribeAny(after: INode, subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn {
+  private subscribeAny = (
+    after: INode,
+    subFns: SubscriberFn<P> | Array<SubscriberFn<P>>,
+    forcedName?: string
+  ): UnsubFn => {
     const { onSubscribe, onUnSubscribe } = Event.logger;
     let subs: Array<SubscriptionNode<P>>;
 
@@ -102,9 +105,9 @@ export class Event<P = undefined> {
         sub.remove();
       });
     };
-  }
+  };
 
-  private makeSubscriberNodesFromArray(subFns: Array<SubscriberFn<P>>): Array<SubscriptionNode<P>> {
+  private makeSubscriberNodesFromArray = (subFns: Array<SubscriberFn<P>>): Array<SubscriptionNode<P>> => {
     const subs: Array<SubscriptionNode<P>> = [];
 
     subFns.forEach((subFn, i) => {
@@ -123,9 +126,12 @@ export class Event<P = undefined> {
     });
 
     return subs;
-  }
+  };
 
-  private makeSubscriberNodesFromFunction(subFn: SubscriberFn<P>, forcedName?: string): Array<SubscriptionNode<P>> {
+  private makeSubscriberNodesFromFunction = (
+    subFn: SubscriberFn<P>,
+    forcedName?: string
+  ): Array<SubscriptionNode<P>> => {
     const subscription = new SubscriptionNode();
     // tslint:disable-next-line:no-string-literal
     const _name = forcedName || (subFn.name && subFn.name !== '__fn__' ? subFn.name : subFn['store'] || 'anonymous');
@@ -134,9 +140,9 @@ export class Event<P = undefined> {
     subscription.name = _name;
 
     return [subscription];
-  }
+  };
 
-  private _dispatch(payload: P) {
+  private _dispatch = (payload: P) => {
     const { onDispatch } = Event.logger;
     onDispatch && onDispatch(this.name, payload);
 
@@ -144,7 +150,7 @@ export class Event<P = undefined> {
       const { fn } = sub;
       fn(payload);
     });
-  }
+  };
 }
 
 // tslint:disable-next-line:max-classes-per-file
