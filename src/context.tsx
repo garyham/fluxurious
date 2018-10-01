@@ -51,7 +51,7 @@ export class Context<S> {
         this.state = { storeState: store.state };
       }
 
-      public componentWillMount() {
+      public componentDidMount() {
         const { store } = this.props;
         store && (_unsub = store.eventChange.subscribe(this.providerChangeState, _name));
         const { onMountProvider } = Context.logger;
