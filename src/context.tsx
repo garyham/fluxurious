@@ -51,12 +51,16 @@ export class Context<S> {
         this.state = { storeState: store.state };
       }
 
+      public componentWillMount() {
+        // Let child consumers know that a valid parent provider is present.
+        setWrap(true);
+      }
+
       public componentDidMount() {
         const { store } = this.props;
         store && (_unsub = store.eventChange.subscribe(this.providerChangeState, _name));
         const { onMountProvider } = Context.logger;
         onMountProvider && onMountProvider(_name);
-        setWrap(true);
       }
 
       public componentWillUnmount() {
