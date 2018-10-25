@@ -22,7 +22,6 @@ export class Event<P = undefined> {
   public name: string;
   private _subs: List<SubscriptionNode<P>>;
   private dispatcher: SubscriberFn<P>;
-  private callDepth = 0;
 
   constructor(name: string) {
     this.name = `event::${name}`;
@@ -45,20 +44,12 @@ export class Event<P = undefined> {
   };
 
   public publish = (payload?: P) => {
-    this.callDepth += 1;
-    if (this.callDepth > 100) {
-      console.error('Dispatching halted at depth of 100...possible recursive event loop');
-      throw new Error('Dispatching halted at depth of 100...possible recursive event loop');
-    }
-
     try {
       this.dispatcher(payload);
     } catch (error) {
       console.error(`error during dispatch in ${this.name} [${error.message}]`);
       throw error;
     }
-
-    this.callDepth -= 1;
   };
 
   public subscribeFirst = (subFns: SubscriberFn<P> | Array<SubscriberFn<P>>, forcedName?: string): UnsubFn => {
@@ -146,9 +137,11 @@ export class Event<P = undefined> {
     const { onDispatch } = Event.logger;
     onDispatch && onDispatch(this.name, payload);
 
-    this._subs.forEach((sub) => {
-      const { fn } = sub;
-      fn(payload);
+    setImmediate(() => {
+      this._subs.forEach((sub) => {
+        const { fn } = sub;
+        fn(payload);
+      });
     });
   };
 }

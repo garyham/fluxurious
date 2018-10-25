@@ -167,14 +167,4 @@ describe('event tests', () => {
   it('should reset the logger', () => {
     Event.addLogger();
   });
-  it('should throw when recursive', () => {
-    testEvent2.resetDispatcher();
-    testEvent2.subscribe(() => {
-      testEvent2.publish();
-    });
-
-    expect(() => {
-      testEvent2.publish();
-    }).toThrow();
-  });
 });
