@@ -49,11 +49,7 @@ export class Store<S> {
   public makeSubscriber<P>(reducerFn: ReducerFn<P, S>): SubscriberFn<P> {
     // tslint:disable-next-line:variable-name
     const __fn__ = (payload: P) => {
-      const currentState = this._state;
-      this._state = reducerFn(payload, this.state);
-      if (this._state !== currentState) {
-        this.eventChange.publish(this._state);
-      }
+      this.state = reducerFn(payload, this.state);
     };
 
     // We add this meta-data to allow us to pass a better name for the store to the event.
