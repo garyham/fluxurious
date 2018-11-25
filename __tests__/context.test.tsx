@@ -48,8 +48,8 @@ describe('Context tests', () => {
   });
 
   it('Consumer renders with console error when not wrapped by Provider', () => {
+    // @ts-ignore
     const Wrapped = testWrap.connect(inner);
-    const wrapper = mount(<Wrapped />);
   });
 
   it('Provider renders children when passed in', () => {

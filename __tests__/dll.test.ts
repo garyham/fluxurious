@@ -1,15 +1,9 @@
-import { standardEventLogger } from '../src';
 import { INodeFragment, List, Node } from '../src/dll';
 
 class TestNode extends Node {
   constructor(public age: number) {
     super();
   }
-}
-
-interface ITestPayload {
-  name: string;
-  number: string;
 }
 
 describe('subscription tests', () => {

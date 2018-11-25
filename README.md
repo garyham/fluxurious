@@ -1,14 +1,20 @@
 # Fluxurious
 
-## Changes
-
-The `.length` property of the event has been changed to `.length()` a method (from a getter) and all Event methods are now bound to `this` to make Events easier to pass over calling boundaries.
-
 ## What is it?
 
-A strongly typed event/store system with easy integration into React (16+). Events are independent of the Store and allow 0..N subscribers to listen for a published payload. Stores can subscribe to Events (as can other functions). Contexts are created to allow Store state to be passed easily to React components.
+A strongly typed event/store system with easy integration into React (16+).
 
-It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is **not** Redux. Time-travelling debug was not a design intent, nor has it any of the tool chain support.
+Events are independent of the Store, allow 0..N subscribers to listen for a published payload, don't rely on strings and are strongly typed.
+
+Stores can subscribe to Events (as can other functions). Contexts are automatically created to allow Store state to be passed easily to React components.
+
+It does similar things to Redux in that it has stores and events (aka actions) and it supports injection of state from props but it is **not** Redux.
+
+## Why?
+
+I liked the Redux is the correct approach but the reliance on strings for events and the use of switch statements made for poor typechecking.  
+Added to that async handling (with Thunk) seems to be an afterthough with really complex typings.
+Lastly the level of boilerplate needed just frustrated me.
 
 I was strongly influenced, both positively and negatively, by Redux (reducers, connect() and the separation of concerns), immutable data and reactive programming (RxJs) and I am a huge typescript fan.
 
@@ -69,7 +75,9 @@ unsub();
 
 ## Execution order.
 
-### Single Event
+### Execution order.
+
+#### Single Event
 
 The order of execution is the order in which subscribers are registered. If you have an order dependency you can subscribe (and unsubscribe) arrays of subscribers.
 
@@ -89,9 +97,15 @@ const unsub = eventMakePayment.subscribe([
 
 calling `unsub()` will unsubscribe them all.
 
-### Cascaded Events
+#### Cascaded Events
 
-> setImmediate() has been removed and a depth counter added to detect recursive events.
+Consider event A with subscribers 1,2 and 3 and event B with subscribers 4 and 5.
+
+If subscriber 1 calls event B this could create a sequencing issue.
+
+> **Is the order** 1,2,3 then 4,5 **or** 1,2 then 4,5 and finally 3.
+
+To guarantee ordering, the store dispatcher is wrapped in a call to `setImmediate()`. This will guarantee the order is 1,2,3 then 4,5.
 
 ### First Subscriber
 
@@ -267,7 +281,7 @@ Event names are prefixed with `event::`, Store names with `store::`. The Loggers
 
 ## Initialisation
 
-I recommend creating all the actions and stores in the application before registering any subscribers.
+I recommend creating all the events and stores in the application before registering any subscribers.
 
 ```typescript
 export const authEvents = {
@@ -281,9 +295,19 @@ export const authStore = new Store<IAuthState>('auth');
 Initialising subscriptions is best done in a function which is called after all events and stores have been created. This avoids issues with potential circular dependencies.
 
 ```typescript
-const initAuth(authEvents:IAuthEvents, authStore:IAuthStore){
+import {authEvents} from './Events'
+
+const initAuth(authStore:IAuthStore){
   authEvents.login.subscribe(authStore.makeSubscriber(({friendlyName, sessionId}, state)=>{
     return({...state, friendlyName, sessionId})
   }))
 }
+```
+
+The store now has a convenience method called addReducer which allows you to chain reducers.
+It will pass the store to the parameter function.
+This allows you to segment the reducer for a store into different files.
+
+```
+authStore.addReducer(initReducer).addReducer(anotherReducer)
 ```

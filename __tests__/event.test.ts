@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { Event, standardEventLogger, Store, SubscriberFn, UnsubFn } from '../src';
+import { Event, standardEventLogger, UnsubFn } from '../src';
 
 jest.useFakeTimers();
 
@@ -10,8 +10,10 @@ interface ITestEventPayload {
 
 describe('event tests', () => {
   let testEvent: Event<ITestEventPayload>;
-  let testEvent2: Event<ITestEventPayload>;
-  testEvent2 = new Event('test');
+  let testEvent3: Event;
+  testEvent3 = new Event('three');
+
+  testEvent3.publish();
 
   const firstFn = jest.fn();
   const secondFn = jest.fn();

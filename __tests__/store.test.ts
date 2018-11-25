@@ -63,13 +63,11 @@ describe('Store tests', () => {
     expect(testStore.state).toEqual(expectedState);
   });
   test('should issue event when updated', () => {
-    let sawAge: number;
+    let sawAge: number = 0;
 
-    const updateAge = ({ age }) => {
+    testStore.eventChange.subscribe(({ age }) => {
       sawAge = age;
-    };
-
-    testStore.eventChange.subscribe(updateAge);
+    });
     ageEvent.publish({ age: 52 });
     expectedState.age = 52;
     jest.runAllImmediates();
@@ -77,7 +75,7 @@ describe('Store tests', () => {
     expect(sawAge).toEqual(52);
   });
   test('should NOT issue event when age = 100', () => {
-    let sawAge: number;
+    let sawAge: number = 0;
 
     testStore.eventChange.subscribe(({ age }) => {
       sawAge = age;
@@ -85,7 +83,7 @@ describe('Store tests', () => {
     ageEvent.publish({ age: 100 });
     jest.runAllImmediates();
     expect(testStore.state).toEqual(expectedState);
-    expect(sawAge).toBeUndefined();
+    expect(sawAge).toEqual(0);
   });
   test('should add subscriber as part of array', () => {
     nameEvent.subscribe([
