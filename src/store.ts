@@ -38,12 +38,17 @@ export class Store<S> {
     // tslint:disable-next-line:only-arrow-functions
   }
 
-  set state(value:S){
+  set state(value: S) {
     const currentState = this._state;
     this._state = value;
     if (this._state !== currentState) {
       this.eventChange.publish(this._state);
     }
+  }
+
+  public addReducer(reducer: (s: Store<S>) => void) {
+    reducer(this);
+    return this;
   }
 
   public makeSubscriber<P>(reducerFn: ReducerFn<P, S>): SubscriberFn<P> {
