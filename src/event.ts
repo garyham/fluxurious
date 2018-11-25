@@ -1,6 +1,6 @@
 import { INode, List, Node } from './dll';
 
-export type SubscriberFn<P> = (payload?: P) => void;
+export type SubscriberFn<P> = (payload: P) => void;
 export type ReducerFn<P, S> = (payload: P, state: S) => S;
 export type DispatcherWrapperFn<P> = (wrapper: SubscriberFn<P>) => SubscriberFn<P>;
 export type UnsubFn = () => void;
@@ -23,7 +23,7 @@ export class Event<P = undefined> {
   private _subs: List<SubscriptionNode<P>>;
   private dispatcher: SubscriberFn<P>;
 
-  constructor(name: string) {
+  constructor(name: string = 'unnamed') {
     this.name = `event::${name}`;
     const { onCreate } = Event.logger;
     onCreate && onCreate(this.name);
@@ -45,7 +45,7 @@ export class Event<P = undefined> {
 
   public publish = (payload?: P) => {
     try {
-      this.dispatcher(payload);
+      this.dispatcher(payload!);
     } catch (error) {
       console.error(`error during dispatch in ${this.name} [${error.message}]`);
       throw error;
