@@ -106,4 +106,10 @@ describe('Store tests', () => {
   test('should reset the logger', () => {
     Store.addLogger();
   });
+  test('should not throw after destroying store', () => {
+    expect(() => {
+      testStore.weaklyDestroy();
+      testStore = new Store('testStore', expectedState);
+    }).not.toThrowError();
+  });
 });

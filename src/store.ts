@@ -19,13 +19,13 @@ export class Store<S> {
 
   constructor(name: string, initialState: S) {
     this._name = `store::${name}`;
-    if (Store.names.indexOf(name) !== -1) {
+    if (Store.names.indexOf(this._name) !== -1) {
       throw new Error(`store with name ${name} already exists`);
     }
     const { onCreate } = Store.logger;
     onCreate && onCreate(this._name);
     this.eventChange = new Event<S>(this._name);
-    Store.names.push(name);
+    Store.names.push(this._name);
     this._state = initialState;
   }
 
@@ -45,6 +45,17 @@ export class Store<S> {
       this.eventChange.publish(this._state);
     }
   }
+
+  public weaklyDestroy = () => {
+    // We simply remove the name check, it does not remove the object.
+    // To have JS actually destroy the Store you must remove any references to it
+    // then garbage collection will remove it.
+    const ndx = Store.names.indexOf(this.name);
+    if (Store.names.indexOf(this.name) === -1) {
+      throw new Error(`store does not exist`);
+    }
+    Store.names.splice(ndx, 1);
+  };
 
   public addReducer(reducer: (s: Store<S>) => void) {
     reducer(this);
